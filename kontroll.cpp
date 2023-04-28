@@ -6,39 +6,31 @@
 #include <numeric>
 #include <assert.h>
 
-int check_personnummer(std::string &persnr)
+int check_personnummer(const std::string &input_pnum)
 {
-    // int personnummer[11];
     std::vector<int> personnummer;
     personnummer.reserve(11);
 
-    std::vector<int> sequence_1 = {3, 7, 6, 1, 8, 9, 4, 5, 2, 1};    /* Første spesielle tallrekke */
-    std::vector<int> sequence_2 = {5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1}; /* Andre spesielle tallrekke */
+    const std::vector<int> sequence_1 = {3, 7, 6, 1, 8, 9, 4, 5, 2, 1};    /* Første spesielle tallrekke */
+    const std::vector<int> sequence_2 = {5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1}; /* Andre spesielle tallrekke */
 
-    std::cout << "Oppgitt fødselsnummer: ";
+    std::cout << "Oppgitt fødselsnummer: " << input_pnum << "\n\n";
 
-    for (auto &&x : persnr)
+    /* Konverter hver karakter i fødsels og personnummeret til et heltall */
+    for (auto &&x : input_pnum)
     {
         personnummer.push_back(x - '0');
-        std::cout << x;
     }
-
-    std::cout << "\n\n";
 
     std::vector<int> produkt_1;
     produkt_1.reserve(10);
-
-    /* for (auto &&x : sequence_1)
-    {
-        produkt_1.push_back(personnummer.at(idx) * sequence_1.at(idx))
-    } */
 
     for (size_t j = 0; j < sequence_1.size(); j++)
     {
         produkt_1.push_back(personnummer.at(j) * sequence_1.at(j));
     }
 
-    auto sum_av_produkt_1 = std::reduce(produkt_1.begin(), produkt_1.end());
+    const auto sum_av_produkt_1 = std::reduce(produkt_1.begin(), produkt_1.end());
 
     /* Skriv ut det første produktet */
     std::cout << "Produkt_1 = ";
@@ -97,7 +89,7 @@ int check_personnummer(std::string &persnr)
         std::cout << "ANDRE KONTROLLSIFFER (" << personnummer[10] << ") ER IKKE GYLDIG!\n";
     }
 
-    int status = 0; /* This is the status indicator, it will be 1 if the personnummer is valid, 0 otherwise*/
+    int status = 0; /* Status indikator, 1 hvis fødsels of personnummeret er gyldig, 0 i alle andre tilfeller */
 
     if (rest_1 == 0 && rest_2 == 0)
     {
@@ -137,7 +129,7 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
 
-        std::string foo = argv[1];
+        const std::string foo = argv[1];
 
         char *end;
         long num = strtol(argv[1], &end, 10);
@@ -147,7 +139,9 @@ int main(int argc, char **argv)
             assert(foo.length() == 11);
 
             return check_personnummer(foo);
-        } else {
+        }
+        else
+        {
             print_help(argv[0]);
             exit(EXIT_FAILURE);
         }
