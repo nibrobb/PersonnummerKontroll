@@ -1,30 +1,31 @@
+/* Copyright 2026 Robin Kristiansen */
 #include <stdio.h>      /* printf */
 #include <stdlib.h>     /* atoi */
 #include <string.h>     /* strlen */
 #include <unistd.h>     /* isatty */
+#include <stdbool.h>    /* bool */
 
 
-int check_personnummer(const char* persnr)
-{
+bool check_personnummer(const char* persnr) {
     int personnummer[11];
 
-    const int const tallrekke_1[10] = {3, 7, 6, 1, 8, 9, 4, 5, 2, 1};     /* Første spesielle tallrekke */
-    const int const tallrekke_2[11] = {5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1};  /* Andre spesielle tallrekke */
+    /** Første spesielle tallrekke */
+    const int tallrekke_1[10] = {3, 7, 6, 1, 8, 9, 4, 5, 2, 1};
+    /* Andre spesielle tallrekke */
+    const int tallrekke_2[11] = {5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1};
 
     printf("Oppgitt fødselsnummer: ");
-    for (int i = 0; i < strlen(persnr); i++)
-    {
-        personnummer[i] = persnr[i] - '0';      /* ASCII-tricery for å parse en enkelt int*/
+    for (size_t i = 0; i < strlen(persnr); i++) {
+        personnummer[i] = persnr[i] - '0';
         printf("%i", personnummer[i]);
     }
 
     printf("\n\n");
 
     int produkt_1[10];
-    int sum_av_produkt_1;
+    int sum_av_produkt_1 = 0;
 
-    for (int j = 0; j < 10; j++)
-    {
+    for (int j = 0; j < 10; j++) {
         produkt_1[j] = personnummer[j] * tallrekke_1[j];
         sum_av_produkt_1 += produkt_1[j];
     }
@@ -35,7 +36,7 @@ int check_personnummer(const char* persnr)
 
     for (int k = 0; k < 10; k++) {
         printf("%i", produkt_1[k]);
-        if(k < 9)
+        if (k < 9)
             printf(", ");
     }
     printf("\n");
@@ -46,18 +47,21 @@ int check_personnummer(const char* persnr)
 
     /* Forteller om første kontrollsiffer er gyldig*/
     if (rest_1 == 0) {
-        printf("FØRSTE KONTROLLSIFFER (%i) ER GYLDIG\n\n\n", personnummer[9]);
+        printf(
+            "FØRSTE KONTROLLSIFFER (%i) ER GYLDIG\n\n\n",
+            personnummer[9]);
     } else {
-        printf("FØRSTE KONTROLLSIFFER (%i) ER IKKE GYLDIG!\n\n\n", personnummer[9]);
+        printf(
+            "FØRSTE KONTROLLSIFFER (%i) ER IKKE GYLDIG!\n\n\n",
+            personnummer[9]);
     }
 
 
 
     int produkt_2[11];
-    int sum_av_produkt_2;
+    int sum_av_produkt_2 = 0;
 
-    for (int l = 0; l < 11; l++)
-    {
+    for (int l = 0; l < 11; l++) {
         produkt_2[l] = personnummer[l] * tallrekke_2[l];
         sum_av_produkt_2 += produkt_2[l];
     }
@@ -65,7 +69,7 @@ int check_personnummer(const char* persnr)
     printf("Produkt_2 = ");
     for (int m = 0; m < 11; m++) {
         printf("%i", produkt_2[m]);
-        if(m < 10)
+        if (m < 10)
             printf(", ");
     }
     printf("\n");
@@ -81,22 +85,18 @@ int check_personnummer(const char* persnr)
         printf("ANDRE KONTROLLSIFFER (%i) ER IKKE GYLDIG!\n", personnummer[10]);
     }
 
-    int status = 0; /* This is the status indicator, it will be 1 if the personnummer is valid, 0 otherwise*/
-
     if (rest_1 == 0 && rest_2 == 0) {
-        status = 1;
         printf("\n\nGYLDIG FØDSELSNUMMER\n");
+        return true;
     } else {
         printf("\n\nUGLYDIG FØDSELSNUMMER\n");
+        return false;
     }
-
-    return status;
 }
 
 
 /* Program for å sjekke kontrollsiffer i personnummer */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     /*
     TODO:
         add -v (verbose) flag, for step-by-step printing
@@ -110,7 +110,9 @@ int main(int argc, char **argv)
             fprintf(stderr, "Oppgi fødselsnummer: ");
 
         if (fgets(buffer, sizeof buffer, stdin) == NULL) {
-            fprintf(stderr, "Usage: %s [Personnummer], for help use --help\n", argv[0]);
+            fprintf(
+                stderr,
+                "Usage: %s [Personnummer], for help use --help\n", argv[0]);
             exit(EXIT_FAILURE);
         }
         buffer[strcspn(buffer, " \t\r\n")] = '\0';
@@ -129,11 +131,6 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    int checked_number = check_personnummer(persnr);
-
-    if (checked_number)
-        exit(EXIT_SUCCESS);
-    else
-        exit(EXIT_FAILURE);
+    return check_personnummer(persnr) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
