@@ -5,6 +5,7 @@
 #include <math.h>
 #include <numeric>
 #include <assert.h>
+#include <unistd.h>
 
 int check_personnummer(const std::string &input_pnum)
 {
@@ -116,10 +117,21 @@ int main(int argc, char **argv)
 {
     using namespace std::literals::string_view_literals;
 
+    std::string foo;
+
     if (argc < 2)
     {
-        print_help(argv[0]);
-        exit(EXIT_FAILURE);
+        /* Ingen argument, les personnummer fra stdin */
+        if (isatty(STDIN_FILENO))
+        {
+            std::cerr << "Oppgi fødselsnummer: ";
+        }
+
+        if (!(std::cin >> foo))
+        {
+            print_help(argv[0]);
+            exit(EXIT_FAILURE);
+        }
     }
     else if (argc == 2)
     {
@@ -129,10 +141,13 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
 
-        const std::string foo = argv[1];
+        foo = argv[1];
+    }
 
+    if (argc <= 2)
+    {
         char *end;
-        long num = strtol(argv[1], &end, 10);
+        long num = strtol(foo.c_str(), &end, 10);
 
         if (num != 0)
         {

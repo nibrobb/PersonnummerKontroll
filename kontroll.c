@@ -1,6 +1,7 @@
 #include <stdio.h>      /* printf */
 #include <stdlib.h>     /* atoi */
 #include <string.h>     /* strlen */
+#include <unistd.h>     /* isatty */
 
 
 int check_personnummer(const char* persnr)
@@ -9,8 +10,6 @@ int check_personnummer(const char* persnr)
 
     const int const tallrekke_1[10] = {3, 7, 6, 1, 8, 9, 4, 5, 2, 1};     /* Første spesielle tallrekke */
     const int const tallrekke_2[11] = {5, 4, 3, 2, 7, 6, 5, 4, 3, 2, 1};  /* Andre spesielle tallrekke */
-
-    
 
     printf("Oppgitt fødselsnummer: ");
     for (int i = 0; i < strlen(persnr); i++)
@@ -33,7 +32,7 @@ int check_personnummer(const char* persnr)
 
     /* Just print the first product */
     printf("Produkt_1 = ");
-    
+
     for (int k = 0; k < 10; k++) {
         printf("%i", produkt_1[k]);
         if(k < 9)
@@ -102,23 +101,39 @@ int main(int argc, char **argv)
     TODO:
         add -v (verbose) flag, for step-by-step printing
     */
+    char buffer[32];
+    const char *persnr;
+
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s [Personnummer], for help use --help\n", argv[0]);
-        exit(EXIT_FAILURE);
+        /* Ingen argument, les personnummer fra stdin */
+        if (isatty(STDIN_FILENO))
+            fprintf(stderr, "Oppgi fødselsnummer: ");
+
+        if (fgets(buffer, sizeof buffer, stdin) == NULL) {
+            fprintf(stderr, "Usage: %s [Personnummer], for help use --help\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
+        buffer[strcspn(buffer, " \t\r\n")] = '\0';
+        persnr = buffer;
     } else if (argc == 2 && strcmp(argv[1], "--help") == 0) {
         fprintf(stderr, "Usage: %s [Personnummer]\n", argv[0]);
         fprintf(stderr, "Options:\n\n");
         fprintf(stderr, "   --help\t\tShows this help screen\n");
         exit(EXIT_FAILURE);
+    } else {
+        persnr = argv[1];
     }
 
+    if (strlen(persnr) != 11) {
+        fprintf(stderr, "Personnummer må være 11 siffer\n");
+        exit(EXIT_FAILURE);
+    }
 
-    int checked_number = check_personnummer(argv[1]);
+    int checked_number = check_personnummer(persnr);
 
     if (checked_number)
         exit(EXIT_SUCCESS);
     else
         exit(EXIT_FAILURE);
-        
 }
 
