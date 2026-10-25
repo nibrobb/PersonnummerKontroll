@@ -15,8 +15,4 @@ install: all
 	cp $(BIN) $(INSTALL_DIR)
 
 clean:
-	rm -f $(BIN) kontroll_cpp
-
-
-kontroll_cpp: kontroll.cpp
-	g++ $< -o $@ -Wall -Wextra -Wpedantic -O3
+	rm -f $(BIN)
